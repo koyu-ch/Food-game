@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>今天吃什麼？阿吃導遊</title>
+<style>
+:root{--bg:#eef1f6;--card:#fff;--ink:#1d1b2e;--mute:#656a80;--line:#d5d9e6;--g1:#ffd0a1;--g2:#ff8e5e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121420;--card:#1c1f30;--ink:#eceaf7;--mute:#a0a4bb;--line:#33374f}}
+:root[data-theme="dark"]{--bg:#121420;--card:#1c1f30;--ink:#eceaf7;--mute:#a0a4bb;--line:#33374f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,#g:focus-visible{outline:3px solid #7c5cbf;outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:14px 12px 28px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.top h1{font-size:20px;margin:0;font-weight:900}
+.top small{color:var(--mute);font-weight:500;margin-left:6px}
+.gear{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:700}
+.stage{display:grid;grid-template-columns:minmax(104px,36%) 1fr;gap:10px;min-height:460px;border-radius:28px;padding:16px 12px;background:linear-gradient(165deg,var(--g1),var(--g2));transition:background .6s}
+.gcol{position:relative;display:flex;align-items:flex-end}
+#g{display:block;width:100%;filter:drop-shadow(0 8px 6px rgba(0,0,0,.28));cursor:pointer;animation:bob 2.6s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+#g.hop{animation:hop .6s ease}
+@keyframes bob{50%{transform:translateY(4px)}}
+@keyframes hop{30%{transform:translateY(-20px) rotate(-4deg)}60%{transform:none}70%{transform:rotate(3deg)}100%{transform:none}}
+#armR{transform-origin:80px 128px;transition:transform .35s}
+.point{transform:rotate(-80deg)}.up{transform:rotate(-165deg)}
+.wave{animation:wave .6s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-135deg)}to{transform:rotate(-170deg)}}
+#pop{position:absolute;top:4px;left:0;background:#fff;color:#1d1b2e;border-radius:12px;padding:4px 9px;font-size:13px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+#pop.on{opacity:1}
+.talk{display:flex;flex-direction:column;justify-content:center;gap:10px;min-width:0}
+#bub{position:relative;background:#fff;color:#1d1b2e;border-radius:18px;padding:12px 14px;min-height:5.2em;font-size:15px;font-weight:600;white-space:pre-line}
+#bub::before{content:"";position:absolute;top:22px;left:-9px;border:10px solid transparent;border-left:0;border-right-color:#fff}
+#choices{display:flex;flex-direction:column;gap:8px}
+.ch{background:#fff;color:#1d1b2e;border:2px solid #1d1b2e;border-radius:14px;padding:10px 12px;font-weight:700;text-align:left;cursor:pointer;transition:transform .12s}
+.ch:active{transform:scale(.97);background:#1d1b2e;color:#fff}
+.res{background:#fff;color:#1d1b2e;border-radius:18px;padding:12px 14px}
+.res .lab{font-size:12px;color:#656a80;font-weight:700}
+.res .nm{font-size:22px;font-weight:900;line-height:1.3;margin:2px 0 4px}
+.chip{display:inline-block;border:1.5px solid #1d1b2e;border-radius:999px;padding:0 10px;font-size:12px;font-weight:700}
+.row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.btn{flex:1 1 80px;border:2px solid #1d1b2e;background:#fff;color:#1d1b2e;border-radius:12px;padding:8px 6px;font-weight:800;cursor:pointer}
+.btn.p{background:#1d1b2e;color:#fff}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.6}
+.fi{flex:1 1 100px;min-width:0;border:2px solid #1d1b2e;border-radius:12px;padding:8px 10px;background:#fff;color:#1d1b2e}
+#panel{position:fixed;inset:0;background:rgba(10,10,25,.6);display:none;z-index:9;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+#panel.on{display:block}
+.sheet{background:var(--card);max-width:520px;margin:0 auto;height:100%;display:flex;flex-direction:column;padding:14px}
+.sheet h2{margin:0;font-size:18px}
+.add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.add input,.add select{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.add .btn{grid-column:1/3;background:#1d1b2e;color:#fff}
+#list{overflow-y:auto;flex:1;border-top:1px solid var(--line)}
+.it{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.it span{flex:1;min-width:0}
+.it small{color:var(--mute);margin-left:6px}
+.it label{font-size:13px;color:var(--mute);white-space:nowrap}
+.del{border:0;background:none;color:#d6336c;font-weight:800;cursor:pointer;padding:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><h1>阿吃<small id="ml"></small></h1><button class="gear" id="gear">我的清單</button></div>
+  <div class="stage">
+    <div class="gcol">
+      <div id="pop"></div>
+      <svg id="g" viewBox="0 0 120 200" tabindex="0" role="button" aria-label="導遊阿吃，點他看看">
+        <defs>
+          <radialGradient id="sk" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="#ffe6d2"/><stop offset=".65" stop-color="#f6cba7"/><stop offset="1" stop-color="#e2a57b"/></radialGradient>
+          <linearGradient id="hr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b445c"/><stop offset="1" stop-color="#17141f"/></linearGradient>
+          <linearGradient id="jk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#58c3ba"/><stop offset="1" stop-color="#2b8189"/></linearGradient>
+          <linearGradient id="pn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46547a"/><stop offset="1" stop-color="#232c47"/></linearGradient>
+          <radialGradient id="sh" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cfd3e2"/></radialGradient>
+        </defs>
+        <ellipse cx="60" cy="194" rx="34" ry="5" fill="#000" opacity=".18"/>
+        <rect x="44" y="154" width="14" height="30" rx="6" fill="url(#pn)"/><rect x="62" y="154" width="14" height="30" rx="6" fill="url(#pn)"/>
+        <ellipse cx="50" cy="186" rx="12" ry="6" fill="url(#sh)"/><ellipse cx="70" cy="186" rx="12" ry="6" fill="url(#sh)"/>
+        <rect x="53" y="100" width="14" height="22" rx="5" fill="#e2a57b"/>
+        <path d="M40 126q0-9 10-10h20q10 1 10 10v30q0 8-8 8H48q-8 0-8-8z" fill="url(#jk)"/>
+        <path d="M48 116q12 10 24 0" fill="none" stroke="#2b8189" stroke-width="3" stroke-linecap="round"/>
+        <path d="M55 122v12M65 122v12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M49 148q11 6 22 0" fill="none" stroke="#2b8189" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M43 128q-1 10 0 20" fill="none" stroke="#8be3da" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+        <line x1="40" y1="126" x2="33" y2="150" stroke="#2b8189" stroke-width="10" stroke-linecap="round"/><line x1="38" y1="126" x2="32" y2="146" stroke="#6fd3ca" stroke-width="2.5" stroke-linecap="round" opacity=".6"/><circle cx="33" cy="154" r="5.5" fill="url(#sk)"/>
+        <g id="armR" class="down"><line x1="80" y1="126" x2="87" y2="150" stroke="#2b8189" stroke-width="10" stroke-linecap="round"/><line x1="78" y1="126" x2="85" y2="146" stroke="#6fd3ca" stroke-width="2.5" stroke-linecap="round" opacity=".6"/><circle cx="87" cy="154" r="5.5" fill="url(#sk)"/></g>
+        <ellipse cx="60" cy="110" rx="20" ry="5" fill="#000" opacity=".14"/>
+        <circle cx="21" cy="74" r="6.5" fill="url(#sk)"/><circle cx="99" cy="74" r="6.5" fill="url(#sk)"/>
+        <ellipse cx="60" cy="68" rx="40" ry="38" fill="url(#sk)"/>
+        <path d="M19 70C13 34 34 14 60 14S107 34 101 70C99 61 95 55 91 51C79 58 61 58 47 51C42 56 38 62 36 70L19 70Z" fill="url(#hr)"/>
+        <path d="M34 34Q60 14 88 32" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="4" stroke-linecap="round"/>
+        <path d="M70 20Q76 34 88 48M52 18Q46 34 38 46" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2" stroke-linecap="round"/>
+        <g id="br" stroke="#2b2433" stroke-width="2.5" stroke-linecap="round"><line x1="39" y1="62" x2="52" y2="60.5"/><line x1="68" y1="60.5" x2="81" y2="62"/></g>
+        <g id="eo"><ellipse cx="46" cy="75" rx="6" ry="7.5" fill="#241a2a"/><ellipse cx="74" cy="75" rx="6" ry="7.5" fill="#241a2a"/><circle cx="48" cy="72.5" r="2.4" fill="#fff"/><circle cx="76" cy="72.5" r="2.4" fill="#fff"/><circle cx="44.5" cy="78" r="1.1" fill="#fff" opacity=".8"/><circle cx="72.5" cy="78" r="1.1" fill="#fff" opacity=".8"/></g>
+        <g id="eh" fill="none" stroke="#241a2a" stroke-width="3" stroke-linecap="round" style="display:none"><path d="M39 78q7-10 14 0"/><path d="M67 78q7-10 14 0"/></g>
+        <ellipse cx="35" cy="86" rx="6" ry="3.5" fill="#ff8f8f" opacity=".45"/><ellipse cx="85" cy="86" rx="6" ry="3.5" fill="#ff8f8f" opacity=".45"/>
+        <path d="M59 83q1 1.6 2 0" fill="none" stroke="#d69a74" stroke-width="1.4" stroke-linecap="round"/>
+        <path id="mo" d="M54 90q6 5 12 0" fill="none" stroke="#8a3a3a" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="talk"><div id="bub" role="status"></div><div id="choices"></div></div>
+  </div>
+</div>
+<div id="panel"><div class="sheet">
+  <div class="top" style="margin:0"><h2>我的清單</h2><button class="gear" id="close">完成</button></div>
+  <div class="add">
+    <input id="an" placeholder="新增餐點名稱" maxlength="20">
+    <select id="am"><option value="ldn">全天都可以</option><option value="b">早餐</option><option value="l">午餐</option><option value="d">晚餐</option><option value="n">宵夜</option></select>
+    <input id="ac" placeholder="類別（選填，如：日式）" maxlength="8" style="grid-column:1/3">
+    <button class="btn" id="addb">新增</button>
+  </div>
+  <div id="list"></div>
+</div></div>
+<script>
+const $=s=>document.querySelector(s);
+const BASE=`蛋餅|b|中式|$Fqa
+燒餅油條|b|中式|$Fa
+飯糰|b|中式|$Fqa
+豆漿配饅頭|b|中式|$la
+鍋貼|bld|中式|$Fqa
+鹹粥|b|中式|$hSa
+清粥小菜|b|中式|hlaS
+蘿蔔糕|b|小吃|$Fa
+鐵板麵|b|小吃|Fsa
+厚片吐司|b|台式|$Fqa
+日式玉子燒定食|b|日式|fFa
+美式早午餐|b|美式|xFw
+班尼迪克蛋|b|美式|xfw
+貝果夾蛋|b|美式|Fqw
+法式吐司|b|法式|xfw
+鬆餅|b|美式|xw
+三明治|b|美式|$qlw
+燕麥水果碗|b|輕食|lfw
+牛肉麵|ld|中式|hFsaS
+滷肉飯|ld|中式|$Fa
+雞腿便當|ld|中式|$Fa
+排骨飯|ld|中式|$Fa
+餛飩湯麵|ld|中式|$haS
+水餃|ld|中式|$Fqa
+酸辣湯餃|ld|中式|hsaS
+乾拌麵配燙青菜|ld|中式|$qa
+麻辣燙|ld|中式|hsaS
+咖哩飯|ld|日式|hFsa
+親子丼|ld|日式|hFfa
+豚骨拉麵|ld|日式|hFsaS
+壽司|ld|日式|fxa
+鰻魚飯|ld|日式|xFa
+日式炸豬排定食|ld|日式|Fsa
+烏龍湯麵|ld|日式|hlaS
+蕎麥涼麵|ld|日式|lfa
+韓式拌飯|ld|韓式|Fa
+韓式部隊鍋|ld|韓式|hsFaS
+豆腐鍋|ld|韓式|hlaS
+泡菜炒豬肉|ld|韓式|sFa
+越南河粉|ld|越式|$hlawS
+泰式打拋豬飯|ld|泰式|sFaw
+泰式綠咖哩|ld|泰式|hsFawS
+印度咖哩配烤餅|ld|印度|hsFwS
+墨西哥捲餅|ld|墨西哥|sFqw
+中東沙威瑪|ld|中東|Fqw
+義大利肉醬麵|ld|義式|Fw
+奶油培根義大利麵|ld|義式|Fxw
+青醬雞肉燉飯|ld|義式|fFw
+瑪格麗特披薩|ld|義式|Fxw
+漢堡薯條|ld|美式|Fqw
+沙拉烤雞胸|ld|輕食|lfw
+鮭魚 Poke 碗|ld|夏威夷|lfw
+便利商店組合|ldn|隨手|$ql
+麻辣火鍋|d|中式|hsxFS
+壽喜燒|d|日式|hxfFS
+日式燒肉|d|日式|xFs
+居酒屋串燒|dn|日式|sxa
+美式牛排|d|西式|xFw
+熱炒|d|中式|sFa
+薑母鴨|d|中式|hxS
+麻油雞|d|中式|hxFS
+韓式炸雞|dn|韓式|sFqa
+鹹酥雞|n|小吃|$sqa
+滷味|n|小吃|$sa
+蚵仔煎|n|小吃|$Fa
+臭豆腐|n|小吃|$sa
+大腸麵線|n|小吃|$hSa
+雞排|n|小吃|$Fsqa
+關東煮|n|日式|$hlSa
+泡麵加蛋|n|隨手|$qhSa
+燒烤|n|中式|sFxa
+豆花|n|甜點|$laS
+珍珠奶茶雞蛋糕|n|甜點|$qa
+冰淇淋甜點|n|甜點|xfw`.split('\n').map(l=>{const[n,m,c,t]=l.split('|');return{n,m,c,t}});
+const MEALS={b:['早餐','#ffe29a','#ffb347'],l:['午餐','#ffd0a1','#ff8e5e'],d:['晚餐','#ff9a8b','#7c5cbf'],n:['宵夜','#4a3a8f','#150f33']};
+const RX={rice:/飯|丼|粥|Poke|便當/,noodle:/麵|粉|餃|餛飩/,bread:/吐司|貝果|三明治|鬆餅|蛋餅|披薩|漢堡|捲餅|沙威瑪|燒餅|饅頭/,meat:/牛|豬|雞|鴨|排骨|肉|培根|串燒|大腸|熱炒|薑母|麻油/,sea:/魚|鮭|鰻|蚵|壽司|蝦/,veg:/沙拉|豆腐|燕麥|水果|豆花|清粥/};
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const hr=new Date().getHours();
+const meal=hr>=5&&hr<10?'b':hr>=10&&hr<16?'l':hr>=16&&hr<21?'d':'n';
+let S={eaten:[],custom:[],removed:[]};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('foodGuide.v1')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('foodGuide.v1',JSON.stringify(S))}catch(e){}};
+const foods=()=>BASE.filter(f=>!S.removed.includes(f.n)).concat(S.custom);
+const eaten=n=>S.eaten.includes(n);
+const mark=n=>{if(!eaten(n)){S.eaten.push(n);save()}};
+
+const FACE={
+ idle:['M54 90q6 5 12 0','none',0,0],think:['M55 92q5-3 10 0','none',0,-3],
+ happy:['M52 89q8 11 16 0z','#8a3a3a',1,-2],wow:['M56 89q4-4 8 0q2 9-4 9q-6 0-4-9z','#8a3a3a',0,-4]};
+let cur='idle';
+function face(k){cur=k;const[d,f,h,b]=FACE[k];$('#mo').setAttribute('d',d);$('#mo').setAttribute('fill',f);
+ $('#eo').style.display=h?'none':'';$('#eh').style.display=h?'':'none';$('#br').setAttribute('transform','translate(0,'+b+')')}
+function hop(){const g=$('#g');g.classList.remove('hop');void g.getBoundingClientRect();g.classList.add('hop')}
+const pose=k=>$('#armR').setAttribute('class',k);
+let pk=0,pt;
+const POKE=['哎唷！','別戳，會癢。','你是不是餓到手癢？','再戳我就罷工喔。','好啦好啦，繼續吧。'];
+function poke(){const p=$('#pop'),old=cur;p.textContent=POKE[pk++%POKE.length];p.classList.add('on');face('wow');hop();
+ clearTimeout(pt);pt=setTimeout(()=>{p.classList.remove('on');face(old)},1200)}
+$('#g').onclick=poke;$('#g').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();poke()}};
+
+let tm;const ch=$('#choices');
+function say(txt,done){clearInterval(tm);ch.innerHTML='';const b=$('#bub');b.textContent='';let i=0;
+ const fin=()=>{clearInterval(tm);b.textContent=txt;b.onclick=null;done&&done()};
+ if(RM){fin();return}
+ b.onclick=fin;tm=setInterval(()=>{b.textContent=txt.slice(0,++i);if(i>=txt.length)fin()},30)}
+function ask(txt,list,fn,free){say(txt,()=>{ch.innerHTML='';pose('point');list.forEach(([l,v])=>{const b=document.createElement('button');b.className='ch';b.textContent=l;b.onclick=()=>fn(v);ch.appendChild(b)});if(free)freeRow(fn)})}
+const KW=[['辣','s'],['湯','S'],['熱','h'],['清','l'],['便宜','$'],['省','$'],['快','q'],['飽','F'],['豪華','x'],['精緻','f']];
+function freeRow(fn){const r=document.createElement('div');r.className='row';r.style.marginTop='0';const i=document.createElement('input');i.className='fi';i.placeholder='或自己打，例如：想吃咖哩';i.maxLength=20;i.setAttribute('aria-label','自己輸入想吃什麼');
+ const go=()=>{const v=i.value.trim();if(v){sel.txt=v;fn('')}};i.onkeydown=e=>{if(e.key==='Enter')go()};
+ const b=btn('送出',go,1);b.style.flex='0 0 auto';r.append(i,b);ch.appendChild(r)}
+function btn(t,fn,p){const b=document.createElement('button');b.className='btn'+(p?' p':'');b.textContent=t;b.onclick=fn;ch.appendChild(b);return b}
+const GREET={b:['早啊！腦袋還沒開機沒關係，我先幫你開。','早餐時間！空腹做決定最危險，交給我。'],
+ l:['午餐時間到！別再說「隨便」，隨便最難。','中午了，你的肚子叫得我都聽到了。'],
+ d:['晚餐時間！今天辛苦了，菜單我來扛。','下班了嗎？這一餐交給我就好。'],
+ n:['這個時間還沒睡，宵夜靈魂覺醒了吧？','深夜食堂開張！我們低調點吃。']};
+const MOODS=[
+ {t:'累到靈魂出竅',g:'h',r:'懂了，電量剩 3%，今天不用思考，我幫你扛。',q:'想要熱呼呼被療癒，還是重口味爽一下？',o:[['熱呼呼','h'],['重口味','s']]},
+ {t:'想犒賞自己',g:'x',r:'哦～今天是「我值得」日，懂。',q:'要吃得豪華，還是吃得精緻？',o:[['豪華','x'],['精緻','f']]},
+ {t:'錢包在哭',g:'$',r:'沒事，省錢也能吃得有尊嚴。',q:'要吃得飽，還是吃得快？',o:[['吃飽','F'],['吃快','q']]},
+ {t:'普通，沒特別感覺',g:'',r:'穩，那我們走穩穩的路線。',q:'想吃飽，還是輕鬆點？',o:[['吃飽','F'],['輕鬆','l']]},
+ {t:'想換個口味',g:'',nw:1,r:'喔？有野心，我喜歡。',q:'想往亞洲，還是西式異國？',o:[['亞洲','a'],['西式異國','w']]}];
+const LINES=['就是它了！{n}，我賭你會說「對，就是這個」。','{n}！別猶豫，猶豫就會餓。','今天的答案：{n}。不接受上訴。'];
+
+let sel={},ref={},seen=new Set(),main=null,chal=null,rej=[];
+function start(){seen.clear();sel={};ref={};rej=[];face('idle');pose('wave');
+ ask(rand(GREET[meal])+'\n今天狀態如何？',MOODS.map(m=>[m.t,m]),m=>{sel.m=m;face('think');
+  ask(m.r+'\n'+m.q,m.o,t=>{sel.t=t;
+   ask((sel.txt?'「'+sel.txt+'」收到，我會優先考慮。':'收到。')+'最後一題：想吃哪一種主食？',[['飯類','rice'],['麵食、餃子','noodle'],['麵包、餅皮','bread'],['都可以','']],s=>{sel.staple=s;face('think');say('讓我想想……',()=>setTimeout(show,600))})},1)})}
+function shake(){pose('up');say('來，幫我一起搖。搖三下，答案就出來。',()=>{ch.innerHTML='';let n=0;
+ const T=['搖一搖 (0/3)','再用力點 (1/3)','最後一下！(2/3)'];
+ const b=btn(T[0],()=>{n++;hop();face(n%2?'wow':'think');if(n>=3){b.disabled=true;setTimeout(show,450)}else b.textContent=T[n]},1);b.style.width='100%'})}
+function score(f){let s=Math.random()*1.5;
+ for(const c of [sel.m.g,sel.t,ref.taste]) if(c&&f.t.includes(c)) s+=3;
+ if(sel.txt){const x=sel.txt;if(f.n.includes(x)||x.includes(f.n)||(f.c&&(f.c.includes(x)||x.includes(f.c))))s+=10;
+  for(let i=0;i<x.length-1;i++){const g=x.slice(i,i+2);if(f.n.includes(g)||(f.c&&f.c.includes(g)))s+=4}
+  for(const[k,v]of KW)if(x.includes(k)&&f.t.includes(v))s+=3}
+ if(sel.m.nw&&!eaten(f.n)) s+=3;
+ for(const k of [sel.staple,ref.staple,ref.main]) if(k&&RX[k].test(f.n)) s+=6;
+ return s}
+function pick(){const ok=f=>f.m.includes(meal);
+ let pool=foods().filter(f=>ok(f)&&!seen.has(f.n)&&!(ref.avoid&&ref.avoid.has(f.c)));
+ if(!pool.length){seen.clear();pool=foods().filter(ok)}
+ if(!pool.length)return null;
+ pool.sort((a,b)=>score(b)-score(a));return pool[0]}
+function pickChal(){const c=foods().filter(f=>f.m.includes(meal)&&!eaten(f.n)&&f.n!==main.n);
+ const d=c.filter(f=>f.c!==main.c);return rand(d.length?d:c.length?c:[null])}
+function show(r){main=pick();
+ if(!main){face('think');say('這個時段的清單是空的，到右上角「我的清單」新增一些吧。',()=>{ch.innerHTML='';btn('回到開頭',start,1)});return}
+ seen.add(main.n);chal=pickChal();face('wow');pose('up');hop();
+ say((r?'根據你剛剛說的，這次我很有把握：{n}。':rand(LINES)).replace('{n}',main.n),render)}
+function card(lab,f,btns){const d=document.createElement('div');d.className='res';
+ d.innerHTML='<div class="lab"></div><div class="nm"></div><span class="chip"></span><div class="row"></div>';
+ d.children[0].textContent=lab;d.children[1].textContent=f.n;d.children[2].textContent=f.c||'自訂';
+ btns.forEach(([t,fn,p])=>{const b=document.createElement('button');b.className='btn'+(p?' p':'');b.textContent=t;b.onclick=fn;d.children[3].appendChild(b)});
+ ch.appendChild(d)}
+function render(){ch.innerHTML='';face('happy');pose('point');
+ card('今日推薦',main,[['就吃這個',()=>done(main),1],['再推一個',()=>reject()],['吃過了',()=>{mark(main.n);reject(1)}]]);
+ if(chal)card('挑戰選項：你還沒吃過',chal,[['我要挑戰',()=>done(chal),1],['換一個挑戰',()=>{chal=pickChal();render()}]]);
+ else{const p=document.createElement('p');p.style.cssText='margin:0 2px;color:#fff;font-weight:700;font-size:14px';p.textContent='清單裡的餐點你都吃過了，到「我的清單」新增新的來挑戰吧。';ch.appendChild(p)}}
+function done(f){mark(f.n);rej=[];face('happy');pose('up');hop();say('好眼光！吃完記得回來跟我報告。',()=>{ch.innerHTML='';btn('再玩一次',start,1)})}
+function reject(ate){rej.push(main);pose('down');
+ if(rej.length>=3){refine();return}
+ face('think');say(ate?'喔～老朋友了，那換一個。':'好，換一個，我不會生氣。',()=>setTimeout(show,400))}
+function refine(){const cats=[...new Set(rej.map(f=>f.c))];rej=[];face('think');
+ ask('連續三個都不對……是我猜錯方向了。來，問細一點。\n主角想吃什麼？',[['肉','meat'],['海鮮','sea'],['清爽蔬食','veg'],['都可以','']],b=>{ref.main=b;
+ ask('口味偏哪邊？',[['清爽','l'],['暖胃','h'],['重口味','s'],['都可以','']],c=>{ref.taste=c;
+ ask('剛剛推的都是「'+cats.join('、')+'」。要避開這幾類嗎？',[['要，避開','y'],['不用','n']],d=>{ref.avoid=d==='y'?new Set(cats):null;face('think');
+  say('收到，這次我鎖定了。',()=>setTimeout(()=>show(1),500))})})})}
+
+function renderList(){const L=$('#list');L.innerHTML='';
+ foods().forEach(f=>{const r=document.createElement('div');r.className='it';
+  const s=document.createElement('span');s.textContent=f.n;const sm=document.createElement('small');sm.textContent=f.c||'';s.appendChild(sm);
+  const lb=document.createElement('label');const cb=document.createElement('input');cb.type='checkbox';cb.checked=eaten(f.n);
+  cb.onchange=()=>{S.eaten=cb.checked?S.eaten.concat(f.n):S.eaten.filter(x=>x!==f.n);save()};
+  lb.append(cb,' 吃過');
+  const d=document.createElement('button');d.className='del';d.textContent='刪除';d.setAttribute('aria-label','刪除'+f.n);
+  d.onclick=()=>{if(BASE.includes(f))S.removed.push(f.n);else S.custom=S.custom.filter(x=>x!==f);save();renderList()};
+  r.append(s,lb,d);L.appendChild(r)})}
+$('#addb').onclick=()=>{const n=$('#an').value.trim();if(!n)return;
+ S.custom.push({n,m:$('#am').value,c:$('#ac').value.trim(),t:''});save();$('#an').value='';$('#ac').value='';renderList()};
+$('#gear').onclick=()=>{renderList();$('#panel').classList.add('on')};
+$('#close').onclick=()=>$('#panel').classList.remove('on');
+
+const M=MEALS[meal];$('#ml').textContent=M[0]+'時間';
+document.documentElement.style.setProperty('--g1',M[1]);document.documentElement.style.setProperty('--g2',M[2]);
+start();
+</script>
+</body>
+</html>
